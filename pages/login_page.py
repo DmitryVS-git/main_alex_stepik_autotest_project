@@ -8,18 +8,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from base.base_class import Base
 
 
-class Login_page(Base):
+class LoginPage(Base):
 
     url = 'https://www.saucedemo.com/'
 
     def __init__(self, driver):
         super().__init__(driver)
-        self.driver = driver
+        # self.driver = driver
 
     # Locators
     user_name = 'user-name'
     password = 'password'
     login_btn = 'login-button'
+    compared_value = 'span.title' # Value from page "Products"
 
     # Getters
     def get_user_name(self):
@@ -30,6 +31,9 @@ class Login_page(Base):
 
     def get_login_btn(self):
         return WebDriverWait(self.driver, 2).until(EC.element_to_be_clickable((By.ID, self.login_btn)))
+
+    def get_compared_value(self):
+        return WebDriverWait(self.driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, self.compared_value)))
 
     # Actions
     def input_user_name(self, user_name):
@@ -48,8 +52,10 @@ class Login_page(Base):
     def authorization(self):
         self.driver.get(self.url)
         self.driver.maximize_window()
-
+        self.get_current_url()
         self.input_user_name("standard_user")
         self.input_password("secret_sauce")
 
         self.click_login_button()
+
+        self.assert_word(self.get_compared_value(), 'Products')
